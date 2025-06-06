@@ -1,0 +1,50 @@
+CREATE DATABASE IF NOT EXISTS GIKONKO_TSS;
+USE GIKONKO_TSS;
+
+-- Trades table
+CREATE TABLE Trades (
+    Trade_Id INT AUTO_INCREMENT PRIMARY KEY,
+    Trade_Name VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- Modules table
+CREATE TABLE Modules (
+    Module_Id INT AUTO_INCREMENT PRIMARY KEY,
+    Module_Name VARCHAR(100) NOT NULL,
+    Trade_Id INT,
+    FOREIGN KEY (Trade_Id) REFERENCES Trades(Trade_Id) ON DELETE CASCADE
+);
+
+-- Trainees table
+CREATE TABLE Trainees (
+    Trainee_Id INT AUTO_INCREMENT PRIMARY KEY,
+    FirstNames VARCHAR(100) NOT NULL,
+    LastName VARCHAR(100) NOT NULL,
+    Gender ENUM('Male', 'Female', 'Other') NOT NULL,
+    Trade_Id INT,
+    FOREIGN KEY (Trade_Id) REFERENCES Trades(Trade_Id) ON DELETE SET NULL
+);
+
+-- Marks table
+CREATE TABLE Marks (
+    Mark_Id INT AUTO_INCREMENT PRIMARY KEY,
+    Trainee_Id INT,
+    Module_Id INT,
+    Formative_Assessment INT CHECK (Formative_Assessment BETWEEN 0 AND 50),
+    Summative_Assessment INT CHECK (Summative_Assessment BETWEEN 0 AND 50),
+    Total_Marks INT GENERATED ALWAYS AS (Formative_Assessment + Summative_Assessment) STORED,
+    FOREIGN KEY (Trainee_Id) REFERENCES Trainees(Trainee_Id) ON DELETE CASCADE,
+    FOREIGN KEY (Module_Id) REFERENCES Modules(Module_Id) ON DELETE CASCADE
+);
+
+-- Users table
+CREATE TABLE Users (
+    User_Id INT AUTO_INCREMENT PRIMARY KEY,
+    Username VARCHAR(50) NOT NULL UNIQUE,
+    Password VARCHAR(255) NOT NULL,
+    Role ENUM('DOS', 'Admin', 'Teacher') NOT NULL
+);
+
+-- Insert some trades example data
+INSERT INTO Trades (Trade_Name) VALUES ('ICT & Multimedia'), ('Building Construction'), ('Electrical Technology'), ('Professional Accounting');
+
